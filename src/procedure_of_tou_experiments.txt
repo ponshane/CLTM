@@ -1,0 +1,25 @@
+Tou:
+    Step1 -> Single Language word embedding:
+        Chinese word embedding: "./UM_Corpus_vectors/2018-02-19-ponshane-um-corpus-chinese-NEWS-word2vec_NV_s100w5m15n10s1e-04.vec"
+        English word embedding: "./UM_Corpus_vectors/2018-04-10-touhsiang-um-corpus-english-NEWS-word2vec_NV_s100w5m8n10s8e-05.vec"
+    
+    Step2 -> Cross-lingual word embedding:
+        Linear mapping: http://31lab.mis.nsysu.edu.tw:9999/touhsiang/Cross-lingual_topic_analysis/blob/master/2018-07-12-touhsiang-um-Mikolov.ipynb
+            output: "./UM_Corpus_vectors/2018-07-16-touhsiang-um-concatenate-keyedvectors-with-split-testset-mikolov-d100.vec"
+            
+        CCA: http://31lab.mis.nsysu.edu.tw:9999/touhsiang/Cross-lingual_topic_analysis/blob/master/2018-07-12-touhsiang-um-CCA.ipynb
+            output: ./UM_Corpus_vectors/2018-07-16-touhsiang-um-concatenate-keyedvectors-with-default-cca-100d.vec
+            
+        SVD: http://31lab.mis.nsysu.edu.tw:9999/touhsiang/Cross-lingual_topic_analysis/blob/master/2018-07-12-touhsiang-um-SVD.ipynb
+            output: ./UM_Corpus_vectors/FastVector/2018-04-17-touhsiang-um-transformed-concate-d100.vec
+            釐清一下為什麼去跑 FastText？
+            
+    Step3 -> Applying PM-LDA
+        2018-07-12-touhsiang-um-create-inputs-for-constructing-mallet-lda.ipynb  
+        # Step1. 產生 malletLDA input
+        
+        2018-07-12-touhsiang-um-create-mallet-lda-with-coherence-evaluation.ipynb
+        # Step2. 利用MalletLDA wrapper 建立單語言 LDA 
+
+        2018-07-24-touhsiang-evaluate-entropy-jsd-CLTM.ipynb
+        # Step3. 整合成跨語言主題模型 PM-LDA
