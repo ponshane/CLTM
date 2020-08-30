@@ -206,6 +206,70 @@ def export_shuffled_documents_from_pd(pd_path, output_path, random_state):
     
     return word_dictionary
 
+def export_shuffled_documents_from_en_jp_pd(pd_path, output_path, random_state):
+    """
+    This function is used to export shuffled labeled corpus e.g., MLDoc for CLTM, JointLDA and PMLDA.
+    BUT ONLY for EN <-> JP Case
+     
+    Args:
+        pd_path (str): the location of corpus dataframe
+        output_path (str): the location of output folder --> file1 for CLTM, file2(file3) for JointLDA and PMLDA
+        random_state (int): random state
+
+    Returns:
+        None but export files
+    """
+
+    df = pd.read_pickle(pd_path)
+    shuffled_df = shuffle(df, random_state=random_state)
+
+    word_dictionary = {}
+    
+    file1 = "CLTM-EN-JP-MLDoc.txt"
+    file2 = "MLDoc-Jpanese.txt"
+    file3 = "MLDoc-English.txt"
+    out = open(output_path+file1, 'w')
+    out2 = open(output_path+file2, 'w')
+    out3 = open(output_path+file3, 'w')
+    
+    # source_idx and target_idx 用來記得 pd_index and corpus idx 的對應
+    source_idx = dict()
+    target_idx = dict()
+
+    # export shuffled documents and word dictionary
+    for idx, each_row in shuffled_df.iterrows():
+
+        # write document file
+        
+        out.write(' '.join(each_row["extracted_text"]) + "\n")
+        for word in each_row["extracted_text"]:
+            # record the presence of word
+            word_dictionary[word] = True
+        
+        if each_row["language"] == "English":
+            source_idx[idx] = len(source_idx)
+            out3.write(" ".join(each_row["extracted_text"]) + "\n")
+        elif each_row["language"] == "Japanese":
+            target_idx[idx] = len(target_idx)
+            out2.write(" ".join(each_row["extracted_text"]) + "\n")
+        
+    out.close()
+    out2.close()
+    out3.close()
+    
+    assert len(source_idx) + len(target_idx) == shuffled_df.shape[0]
+    print("Corpus stores in:", output_path)
+
+    shuffled_df.to_pickle(output_path+"Shuffled_RS"+str(random_state)+"_tagged_englishAndjapanese_corpus_pd.pkl")
+    print("Shuffled corpus stores in:", output_path)
+    
+    out4 = open(output_path+"en-jp-inverse-index-mapping-dict.pickle", 'wb')
+    pickle.dump((source_idx, target_idx), out4)
+    out4.close()
+    print("en-jp-inverse-index-mapping-dict stores in:", output_path)
+    
+    return word_dictionary
+
 def export_selected_word_space(vector_path, word_dictionary, outfilename):
     """
     Because the resultant corpus of export_selected_documents function
