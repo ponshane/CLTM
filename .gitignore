@@ -5,7 +5,8 @@ Test.ipynb
 
 ### Folder ###
 __pycache__/
-
+out/
+logs/
 
 ### JupyterNotebook ###
 .ipynb_checkpoints
