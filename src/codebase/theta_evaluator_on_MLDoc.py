@@ -211,5 +211,51 @@ def evaluate_theta_of_PMLDA_on_MLDoc(corpus, language, theta_file_list, dictiona
     
     return results
 
+def evaluate_theta_of_MTAnchor_on_MLDoc(corpus, language, theta_file_list, dictionary):
+
+    # Corpus load back and  describe class column
+    Corpus = pd.read_pickle(corpus)
+
+    grid = {
+        'C': [0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 1e0],
+        'penalty': ['l2'],
+        'n_jobs': [-1],
+        'solver': ['lbfgs'],
+        'multi_class': ['ovr']
+    }
+
+    paramGrid = ParameterGrid(grid)
+    results = []
+
+    for each_theta_file in theta_file_list:
+        each_corpus = Corpus.copy()
+        
+        with open(each_theta_file, 'rb') as handle:
+            _, _, source_matrix, target_matrix = pickle.load(handle)
+            
+        with open(dictionary, 'rb') as handle:
+            source_idx, target_idx = pickle.load(handle)
+        
+        thetas = []
+        for idx, row in each_corpus.iterrows():
+            if idx in source_idx.keys():
+                thetas.append(normalize(source_matrix[source_idx[idx]]))
+            elif idx in target_idx.keys():
+                thetas.append(normalize(target_matrix[target_idx[idx]]))
+        
+        each_corpus["theta"] = thetas
+        Data_Object, _ = transform_pd_to_numpy_data(each_corpus, language)
+
+        bestModel, bestScore, _, _ = pf.bestFit(LogisticRegression, paramGrid,
+                   Data_Object["x_train"], Data_Object["y_train"], Data_Object["x_dev"], Data_Object["y_dev"],
+                   metric = accuracy_score, scoreLabel = "Accuracy", showPlot=False)
+
+        #print(bestModel, bestScore)
+        acc = bestModel.score(X=Data_Object["x_test"], y=Data_Object["y_test"])
+        _, file = os.path.split(each_theta_file)
+        results.append({"file":file, "dev_acc":bestScore, "test_acc":acc})
+    
+    return results
+
 if __name__ == '__main__':
     pass
