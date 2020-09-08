@@ -26,8 +26,14 @@ def code_dictionary(dict_path, src_dict, tgt_dict, sep):
         entries = f.read().splitlines()
     dictionary = []
     for entry in entries:
-        w1, w2 = entry.split(sep)
-        dictionary.append([src_dict.index(w1), tgt_dict.index(w2)])
+        ent = entry.split(sep)
+        w1 = ent[0].lower()
+        w2 = ent[1]
+        try:
+            dictionary.append([src_dict.index(w1), tgt_dict.index(w2)])
+        except ValueError:
+            continue
+    print(f"The final size of dictionary: {len(dictionary)}")
     return dictionary
 
 def convert_2dlist(lst, index):
@@ -95,7 +101,8 @@ if __name__ == "__main__":
         print(f"Start to train {n_topic} topics.\n")
         A1, A2, Q1, Q2, anchors1, anchors2 = anchor_topic.topics.model_multi_topics(M1=src_word_doc,\
             M2=tgt_word_doc, k=n_topic,\
-                threshold1=0.05, threshold2=0.05, dictionary=dictionary)
+                threshold1=0.001, threshold2=0.001, dictionary=dictionary)
+        # threshold1, threshold2 = 0.05, 0,05 for MLDoc
 
         # (3) calculate phi and theta
         topic_words1 = get_top_topic_words(A1, 100, src_vocab)
