@@ -29,15 +29,15 @@ step_size = args.step_size
 classifier = args.classifier
 
 concatenate_word_vectors = LanguageEmbedding.read_from_KeyedVectors(embedding_file)
-# en_num, chi_num, error_word_idx = LanguageEmbedding.check_vocabulary_type_of_space(concatenate_word_vectors)
+en_num, chi_num, error_word_idx = LanguageEmbedding.check_vocabulary_type_of_space(concatenate_word_vectors)
 
-print("Note that I diretly set the en_num & chi_num for jp-en case!")
-print("SHOULD check when in en-zh case")
-"""
-12894 for jp words
-19982 for en words
-"""
-en_num, chi_num, error_word_idx = 12894, 19982, list()
+# print("Note that I diretly set the en_num & chi_num for jp-en case!")
+# print("SHOULD check when in en-zh case")
+# """
+# 12894 for jp words
+# 19982 for en words
+# """
+# en_num, chi_num, error_word_idx = 12894, 19982, list()
 
 if len(error_word_idx) != 0:
     print("Please clean your word embeddings first, there are some words can't recognize!")
@@ -48,5 +48,5 @@ coef = LanguageEmbedding.estimate_coefficient_of_language_dimension(concatenate_
 num_of_dim = concatenate_word_vectors.wv.vectors.shape[1]
 
 for each_mask_dim in range(start_dim, end_dim, step_size):
-    LanguageEmbedding.mask_language_dim_and_export_to_CLTM(coef, each_mask_dim, concatenate_word_vectors.index2word,
+    LanguageEmbedding.mask_language_dim_and_export_to_KeyedVectors(coef, each_mask_dim, concatenate_word_vectors.index2word,
      concatenate_word_vectors.wv.vectors, file_path+str(num_of_dim - each_mask_dim*2)+postfix, classifier)
